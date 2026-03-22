@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Nexus | Vectorless RAG Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="neural-nexus">
+  <div class="background-void">
+    <div class="gradient-glow top-left"></div>
+    <div class="gradient-glow bottom-right"></div>
+  </div>
+
+  <div id="nexus-app">
+    <!-- Cyber Header -->
+    <header class="cyber-header">
+      <div class="logo-group">
+        <span class="logo-icon">▲</span>
+        <h1>NEURAL <span class="accent">NEXUS</span></h1>
+      </div>
+      <div id="status-chip" class="status-chip">
+        <span class="indicator pulse-green"></span>
+        <span class="label">SYSTEM: ONLINE</span>
+      </div>
+    </header>
+
+    <main class="dashboard-grid">
+      <!-- Left: Agent Logs -->
+      <section id="terminal-pane" class="glass-pane logs">
+        <div class="pane-header">
+          <span class="label">AGENT REASONING</span>
+          <span class="terminal-id">LOG_TX: 0x9928</span>
+        </div>
+        <div id="agent-logs" class="log-stream">
+          <div class="log-entry system">[SYSTEM]: Initializing Neural Nexus Engine...</div>
+        </div>
+      </section>
+
+      <!-- Center: The Graph Field -->
+      <section id="graph-pane" class="graph-viewport">
+        <div id="graph-container">
+          <!-- GSAP Visual Graph Here -->
+          <svg id="main-svg" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <div id="empty-state" class="empty-state">
+          <h2>KNOWLEDGE FIELD: INACTIVE</h2>
+          <p>UPLOAD A STRUCTURED PDF TO BEGIN NEURAL INDEXING</p>
+        </div>
+      </section>
+
+      <!-- Right: Processing & Meta -->
+      <section id="control-pane" class="glass-pane controls">
+          <div class="meta-section">
+            <div class="pane-header"><span class="label">DOCUMENT ANALYTICS</span></div>
+            <div id="doc-meta" class="meta-stats">
+              <p>DOC_ID: <span class="stat-val">NONE</span></p>
+              <p>TOKENS_SUM: <span class="stat-val">---</span></p>
+              <p>HIERARCHY: <span class="stat-val">INACTIVE</span></p>
+            </div>
+          </div>
+
+          <div class="upload-section">
+            <input type="file" id="fileInput" hidden accept="application/pdf">
+            <button id="uploadBtn" class="premium-btn">
+              <span class="btn-text">INITIALIZE UPLOAD</span>
+              <div class="btn-glow"></div>
+            </button>
+          </div>
+      </section>
+    </main>
+
+    <!-- Bottom: Retrieval Console -->
+    <footer class="retrieval-console">
+      <div class="search-matrix">
+        <div class="scanning-light"></div>
+        <input type="text" id="queryInput" placeholder="PROMPT THE AGENT (e.g., Explain the financial risks)...">
+        <button id="searchBtn" class="search-trigger">
+          <span class="logo-icon">►</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Retrieval Result Overlay -->
+  <div id="result-overlay" class="result-overlay hidden">
+    <div class="overlay-glass">
+      <button id="closeOverlay" class="close-btn">×</button>
+      <h2>RETRIEVED CONTEXT</h2>
+      <div id="resultContent" class="result-content-area"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

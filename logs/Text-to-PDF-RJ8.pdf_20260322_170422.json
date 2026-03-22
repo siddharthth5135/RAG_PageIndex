@@ -1,0 +1,35 @@
+[
+  {
+    "total_page_number": 19
+  },
+  {
+    "total_token": 8887
+  },
+  {
+    "toc_content": "Together with our allies we are providing support to the Ukrainians in their fight for freedom. \nMilitary assistance. Economic assistance. Humanitarian assistance.\u00a0\n \nWe are giving more than $1 Billion in direct assistance to Ukraine.\u00a0\n \nAnd we will continue to aid the Ukrainian people as they defend their country and to help ease \ntheir suffering. \u00a0\n \nLet me be clear, our forces are not engaged and will not engage in conflict with Russian forces in \nUkraine. \u00a0\n \nOur forces are not going to Europe to fight in Ukraine, but to defend our NATO Allies \u2013 in the \nevent that Putin decides to keep moving west. \u00a0\n \nFor that purpose we\u2019ve mobilized American ground forces, air squadrons, and ship deployments \nto protect NATO countries including Poland, Romania, Latvia, Lithuania, and Estonia.\u00a0\n \nAs I have made crystal clear the United States and our Allies will defend every inch of territory of \nNATO countries with the full force of our collective power. \u00a0\n \nAnd we remain clear-eyed. The Ukrainians are fighting back with pure courage. But the next few \ndays weeks, months, will be hard on them. \u00a0\n \nPutin has unleashed violence and chaos. \u00a0But while he may make gains on the battlefield \u2013 he \nwill pay a continuing high price over the long run.\u00a0\n \nAnd a proud Ukrainian people, who have known 30 years \u00a0of independence, have repeatedly \nshown that they will not tolerate anyone who tries to take their country backwards. \u00a0\n \nTo all Americans, I will be honest with you, as I\u2019ve always promised. A Russian dictator, invading \na foreign country, has costs around the world.\u00a0\n \nAnd I\u2019m taking robust action to make sure the pain of our sanctions \u00a0is targeted at Russia\u2019s \neconomy. And I will use every tool at our disposal to protect American businesses and \nconsumers.\u00a0\n \nTonight, I can announce that the United States has worked with 30 other countries to release 60 \nMillion barrels of oil from reserves around the world. \u00a0\n \nAmerica will lead that effort, releasing 30 Million barrels from our own Strategic Petroleum \nReserve. And we stand ready to do more if necessary, unified with our allies. \u00a0\n \nThese steps will help blunt gas prices here at home. And I know the news about what\u2019s \nhappening can seem alarming.\u00a0\n \nBut I want you to know that we are going to be okay.\u00a0\n \nWhen the history of this era is written Putin\u2019s war on Ukraine will have left Russia weaker and the \nrest of the world stronger.\u00a0\n \nWhile it shouldn\u2019t have taken something so terrible for people around the world to see what\u2019s at ",
+    "toc_page_list": [
+      2
+    ],
+    "page_index_given_in_toc": "no"
+  },
+  {
+    "message": "len(group_texts): 1"
+  },
+  {
+    "message": "generate_toc: {}"
+  },
+  {
+    "message": "convert_physical_index_to_int: {}"
+  },
+  {
+    "mode": "process_toc_with_page_numbers",
+    "accuracy": 0,
+    "incorrect_results": []
+  },
+  {
+    "message": "Final fallback accuracy check failed, returning best effort structure."
+  },
+  {
+    "message": "Checking title appearance in start concurrently"
+  }
+]

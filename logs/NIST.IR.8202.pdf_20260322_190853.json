@@ -1,0 +1,62 @@
+[
+  {
+    "total_page_number": 68
+  },
+  {
+    "total_token": 35908
+  },
+  {
+    "toc_content": "NISTIR  8202  BLOCKCHAIN TECHNOLOGY OVERVIEW  \n    \nii \n \nThis publication is available free of charge from: http s://doi.org/10.6028/ NIST.IR.8202  \n Reports on Computer Systems Technology \nThe Information Technology Laboratory (ITL) at the National Institute of Standards and \nTechnology (NIST) promotes the U.S. economy and public welfare by providing technical \nleadership for the Nation\u2019s measurement and standards infrastructure. ITL develops tests, test \nmethods, reference data, proof of concept implementations, and technical analyses to advance \nthe development and productive use of information technology. ITL\u2019s responsibilities include the \ndevelopment of management, administrative, technical, and physical standards and guidelines for \nthe cost -effective security and privacy of other than national s ecurity -related information in \nfederal informa tion systems.  \n \nAbstract  \nBlockchains  are tamper evident and tamper resistant digital ledger s implemented in a distributed \nfashion (i.e., without a central repository) and usually without a central authority (i.e., a bank, \ncompany, or government). At their basic level, they enable a community of users to record \ntransactions in a shared ledger within  that community, such that under normal operation of the \nblockchain network no transaction can be changed once published. This document  provide s a \nhigh- level technical overview of blockchain technology. The purpose is to help reader s \nunderstand how blockchain technology work s.  \n \nKeywords  \nblockchain;  consensus model; cryptocurrency ; cryptographic hash function; asymmetric- key \ncryptography; distributed ledger ; distributed consensus algorithm; proof of work;  proof of stake ; \nround robin ; proof of authority ; proof of identity ; proof of elapsed time ; soft fork, hard fork; \nsmart contracts; data oracle . \n  NISTIR  8202  BLOCKCHAIN TECHNOLOGY OVERVIEW  \n    \niii \n \nThis publication is available free of charge from: http s://doi.org/10.6028/ NIST.IR.8202  \n Acknowledgments \nThe authors wish to thank all contributors to this publication, and their colleagues who reviewed \ndrafts of this report and contributed technical and editorial additions . This includes NIST staff \nJames Dray, Sandy Ressler, Rick Kuhn, Lee Badger, Eric Trapnell, Mark Trapnell , James Shook \nand Michael Davidson. \nAdditional thanks to all  the people and organizations who submitted comments during the public \ncomment period.  \n \nAudience  \nThis publication is designed for readers with little or no knowledge of blockchain technology \nwho wish to understand at a high level how it wor ks. It is not intended to be a technical guide; \nthe discussion of the technology provide s a conceptual understanding. N ote that some examples, \nfigures , and tables are simplified to fit the audience.  \n \nTrademark Information  \nAll registered trademarks and tra demarks belong to their respective organizations.  \n \n  ",
+    "toc_page_list": [
+      3,
+      4
+    ],
+    "page_index_given_in_toc": "yes"
+  },
+  {
+    "message": "toc_with_page_number: [{'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'ii'}, {'structure': None, 'title': 'Abstract', 'page': None}, {'structure': None, 'title': 'Keywords', 'page': None}, {'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'iii'}, {'structure': None, 'title': 'Acknowledgments', 'page': None}, {'structure': None, 'title': 'Audience', 'page': None}, {'structure': None, 'title': 'Trademark Information', 'page': None}]"
+  },
+  {
+    "message": "toc_with_physical_index: {}"
+  },
+  {
+    "message": "toc_with_physical_index: {}"
+  },
+  {
+    "message": "matching_pairs: []"
+  },
+  {
+    "message": "offset: None"
+  },
+  {
+    "message": "toc_with_page_number: [{'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'ii'}, {'structure': None, 'title': 'Abstract', 'page': None}, {'structure': None, 'title': 'Keywords', 'page': None}, {'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'iii'}, {'structure': None, 'title': 'Acknowledgments', 'page': None}, {'structure': None, 'title': 'Audience', 'page': None}, {'structure': None, 'title': 'Trademark Information', 'page': None}]"
+  },
+  {
+    "message": "toc_with_page_number: [{'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'ii'}, {'structure': None, 'title': 'Abstract', 'page': None}, {'structure': None, 'title': 'Keywords', 'page': None}, {'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'iii'}, {'structure': None, 'title': 'Acknowledgments', 'page': None}, {'structure': None, 'title': 'Audience', 'page': None}, {'structure': None, 'title': 'Trademark Information', 'page': None}]"
+  },
+  {
+    "mode": "process_toc_with_page_numbers",
+    "accuracy": 0,
+    "incorrect_results": []
+  },
+  {
+    "message": "toc_transformer: [{'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'ii'}, {'structure': None, 'title': 'Abstract', 'page': None}, {'structure': None, 'title': 'Keywords', 'page': None}, {'structure': None, 'title': 'NISTIR 8202 BLOCKCHAIN TECHNOLOGY OVERVIEW', 'page': 'iii'}, {'structure': None, 'title': 'Acknowledgments', 'page': None}, {'structure': None, 'title': 'Audience', 'page': None}, {'structure': None, 'title': 'Trademark Information', 'page': None}]"
+  },
+  {
+    "message": "len(group_texts): 2"
+  },
+  {
+    "message": "add_page_number_to_toc: [{'structure': 'chapter', 'title': 'Introduction', 'page': '1'}, {'structure': 'section', 'title': 'Blockchain Basics', 'page': '2'}, {'structure': 'subsection', 'title': 'What is Blockchain?', 'page': '3'}, {'structure': 'subsection', 'title': 'How Does Blockchain Work?', 'page': '4'}, {'structure': 'section', 'title': 'Types of Consensus Algorithms', 'page': '5'}, {'structure': 'subsection', 'title': 'Proof of Work (PoW)', 'page': '6'}, {'structure': 'subsection', 'title': 'Proof of Stake (PoS)', 'page': '7'}, {'structure': 'subsection', 'title': 'Round Robin', 'page': '8'}, {'structure': 'subsection', 'title': 'Proof of Authority/Proof of Identity', 'page': '9'}, {'structure': 'subsection', 'title': 'Proof of Elapsed Time (PoET)', 'page': '10'}, {'structure': 'section', 'title': 'Applications of Blockchain', 'page': '11'}, {'structure': 'subsection', 'title': 'Finance and Cryptocurrency', 'page': '12'}, {'structure': 'subsection', 'title': 'Supply Chain Management', 'page': '13'}, {'structure': 'subsection', 'title': 'Healthcare', 'page': '14'}, {'structure': 'section', 'title': 'Challenges and Limitations', 'page': '15'}, {'structure': 'subsection', 'title': 'Scalability Issues', 'page': '16'}, {'structure': 'subsection', 'title': 'Privacy Concerns', 'page': '17'}, {'structure': 'section', 'title': 'Future Directions', 'page': '18'}, {'structure': 'chapter', 'title': 'Conclusion', 'page': '19'}]"
+  },
+  {
+    "message": "convert_physical_index_to_int: [{'structure': 'chapter', 'title': 'Introduction', 'page': '1'}, {'structure': 'section', 'title': 'Blockchain Basics', 'page': '2'}, {'structure': 'subsection', 'title': 'What is Blockchain?', 'page': '3'}, {'structure': 'subsection', 'title': 'How Does Blockchain Work?', 'page': '4'}, {'structure': 'section', 'title': 'Types of Consensus Algorithms', 'page': '5'}, {'structure': 'subsection', 'title': 'Proof of Work (PoW)', 'page': '6'}, {'structure': 'subsection', 'title': 'Proof of Stake (PoS)', 'page': '7'}, {'structure': 'subsection', 'title': 'Round Robin', 'page': '8'}, {'structure': 'subsection', 'title': 'Proof of Authority/Proof of Identity', 'page': '9'}, {'structure': 'subsection', 'title': 'Proof of Elapsed Time (PoET)', 'page': '10'}, {'structure': 'section', 'title': 'Applications of Blockchain', 'page': '11'}, {'structure': 'subsection', 'title': 'Finance and Cryptocurrency', 'page': '12'}, {'structure': 'subsection', 'title': 'Supply Chain Management', 'page': '13'}, {'structure': 'subsection', 'title': 'Healthcare', 'page': '14'}, {'structure': 'section', 'title': 'Challenges and Limitations', 'page': '15'}, {'structure': 'subsection', 'title': 'Scalability Issues', 'page': '16'}, {'structure': 'subsection', 'title': 'Privacy Concerns', 'page': '17'}, {'structure': 'section', 'title': 'Future Directions', 'page': '18'}, {'structure': 'chapter', 'title': 'Conclusion', 'page': '19'}]"
+  },
+  {
+    "mode": "process_toc_with_page_numbers",
+    "accuracy": 0,
+    "incorrect_results": []
+  },
+  {
+    "message": "len(group_texts): 2"
+  }
+]

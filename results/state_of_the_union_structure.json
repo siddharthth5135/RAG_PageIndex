@@ -1,0 +1,11 @@
+{
+  "doc_name": "state_of_the_union",
+  "structure": [
+    {
+      "title": "State of the Union",
+      "node_id": "0000",
+      "summary": "President Joe Biden's State of the Union Address highlights several key areas for national focus and action, including:\n\n1. **Opioid Epidemic**: Increasing funding for prevention, treatment, harm reduction, and recovery.\n2. **Mental Health**: Supporting children's mental health, holding social media platforms accountable, and ensuring access to mental health services.\n3. **Veterans**: Providing assistance with job training, housing, and VA care debt-free, particularly addressing the impacts of toxic exposures like burn pits.\n4. **Cancer Research**: Supercharging the Cancer Moonshot initiative to cut cancer death rates by at least 50% over the next 25 years.\n\nThe address emphasizes unity and bipartisan cooperation, calling for action on these issues to protect freedom, expand fairness, and save democracy.",
+      "line_num": 1
+    }
+  ]
+}
