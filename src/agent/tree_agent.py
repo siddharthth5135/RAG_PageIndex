@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from litellm import acompletion
+from src.agent.llm_provider import smart_completion
 
 async def execute_tree_query(query: str, doc_name: str, model_name: str):
     # Load Tree
@@ -23,7 +23,7 @@ Return ONLY a JSON array of the most relevant `node_id` strings to answer the qu
 Do not add any explanation or backticks.
 """
 
-    response_sel = await acompletion(
+    response_sel = await smart_completion(
         model=model_name,
         messages=[{"role": "user", "content": selection_prompt}],
         temperature=0.1
@@ -83,7 +83,7 @@ PASSAGES:
 USER QUESTION: {query}
 """
 
-    response_ans = await acompletion(
+    response_ans = await smart_completion(
         model=model_name,
         messages=[{"role": "user", "content": answer_prompt}],
         temperature=0.3

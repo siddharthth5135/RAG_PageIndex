@@ -1,57 +1,150 @@
-# Vectorless RAG (PageIndex Architecture)
+# 🚀 Vectorless RAG: PageIndex Architecture
 
-## 📌 The Core Concept
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/Frontend-React-61DAFB.svg?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
+[![Three.js](https://img.shields.io/badge/Visuals-Three.js-black.svg?style=flat&logo=three.js&logoColor=white)](https://threejs.org/)
+[![LiteLLM](https://img.shields.io/badge/LLM-LiteLLM-blue.svg?style=flat)](https://github.com/BerriAI/litellm)
 
-A revolutionary approach to Retrieval-Augmented Generation that **completely eliminates chunking pipelines and Vector Databases** (no Pinecone, no Chroma, no FAISS). Instead of arbitrarily breaking documents into chunks based on token limits and relying on blind mathematical similarity for retrieval, it parses the document to understand its semantic layout and preserves it as a **Hierarchical JSON Tree Index**.
+A revolutionary, high-performance approach to Retrieval-Augmented Generation that **completely eliminates chunking pipelines and Vector Databases**. 
 
----
-
-## 🛠️ How It Was Implemented
-
-We completely stripped down the legacy backend. The old chunking scripts, complex graph retrievers, and deep dependencies have been eliminated and replaced with a highly efficient, two-phase PageIndex architecture.
-
-### Phase 1: Ingest (Run once per document)
-Handled by `src/document_parser/tree_indexer.py`.
-1. **Extraction**: We use **PyMuPDF** to accurately and quickly extract raw text from PDFs on a strict page-by-page basis.
-2. **LLM Tree Generation**: The extracted text is injected into a single prompt. The LLM reads all the pages and returns a structured JSON tree containing `node_id`, `title`, concise `summary`, `start_page`, and `end_page` for every logical section and subsection.
-3. **Storage**: The tiny JSON Tree (~2-5 KB) and the raw, un-chunked pages are cleanly stored as basic JSON logs. **No Vector embeddings are generated.**
-
-### Phase 2: Query (Runs on every user question)
-Handled by `src/agent/tree_agent.py`.
-1. **Tree Scanning**: When a user asks a question, the LLM is given the entire JSON Tree (the Table of Contents mapping). It contextually reasons about which sections are relevant—like a human scanning a textbook's index.
-2. **Surgical Selection**: The LLM outputs an array of exact `node_id`s that target the specific information intent.
-3. **Raw Page Injection**: The engine fetches the explicit raw pages mapped to those `node_id`s (usually just 2-4 pages).
-4. **Answer & Cite**: The LLM constructs a final response using *only* those retrieved pages, providing explicit tracking of what section and page the answer came from.
-
-### The REST Interface
-- **FastAPI Integration** (`fastapi_server.py`): Delivers the capabilities over clean `/upload` and `/query` endpoints, and streams the tree parsing generation in real-time so the frontend can visualize it beautifully using Three.js logic.
+Traditional RAG is blind; it breaks documents into mathematical chunks and hopes for the best. **Vectorless RAG** parses documents into a hierarchical semantic tree, preserving the document's logical structure for surgical precision.
 
 ---
 
-## 🔥 Why This Is Vastly Superior to Traditional RAG
-
-### 1. Intent vs. Similarity (Accuracy)
-Traditional Vector RAG relies squarely on keyword/vector mathematical overlap. If a user asks a nuanced question structured completely differently than the document text, vector search fails. 
-**Vectorless RAG** uses an LLM to browse the *summaries* of sections. The LLM understands query intent and can surgically isolate where the answer lives even if vocabulary differs.
-
-### 2. Traceability and True Citations
-When Vector RAG pulls arbitrary chunks, reconstructing the true context is like piecing together confetti. 
-**Vectorless RAG** retrieves whole logical pages mapped to a specific subnode. Every generated answer cites the exact semantic section and page range. Zero black-box magic, full audit trail.
-
-### 3. Contextual Cross-Referencing
-Vector RAG cannot follow internal document logic. If a text chunk says *"Refer to Appendix G for deferred asset metrics,"* vector search hits a dead-end. 
-**Vectorless RAG** behaves agentically: the LLM identifies the reference, navigates the tree to find Appendix G, fetches those pages, and completes the logical jump.
-
-### 4. Zero Vector Infrastructure 
-Forget setting up complex, expensive ingestion pipelines to a hosted vector database. No tuning chunk sizes, no chunk overlap hacks. The "database" is entirely just a localized JSON string and a file map.
-
-### 5. Massive Cost Reduction
-Vector pipelines run up crazy embedding API costs and burn massive amounts of context stuffed with top-K chunks that might not even contain the answer. 
-With Vectorless RAG, the tree is incredibly token-light (~1-3k tokens). The indexing prompt runs once (~$0.01 for 100 pages). It guarantees surgical context payloads on every query.
+## 📑 Table of Contents
+- [🔍 Why Vectorless RAG?](#-why-vectorless-rag)
+- [📈 Advantages vs. Traditional RAG](#-advantages-vs-traditional-rag)
+- [🧠 Multi-Model Intelligence (Failover Logic)](#-multi-model-intelligence-failover-logic)
+- [💰 Real-World Financial Impact](#-real-world-financial-impact)
+- [🏗️ Technical Architecture](#️-technical-architecture)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [🚀 Setup & Installation](#-setup--installation)
 
 ---
 
-## 🚀 Tech Stack
+## 🔍 Why Vectorless RAG?
 
-*   **Backend**: Python, FastAPI, PyMuPDF, LiteLLM (Supporting completely local LLMs like Qwen2.5-Coder via Ollama).
-*   **Frontend**: React, Vite, Three.js (For real-time 3D rendering of the hierarchical tree visualization), GSAP.
+In traditional RAG, documents are sliced into arbitrary chunks (e.g., 500 tokens). This leads to:
+- **Lost Context**: A sentence in a chunk might refer to a table 10 pages away.
+- **Black Box Retrieval**: Mathematical similarity (Cosine Similarity) doesn't understand "intent."
+- **Infrastructure Overload**: Managing Vector DBs like Pinecone, Milvus, or Chroma adds cost and complexity.
+
+**Vectorless RAG** treats a document like a human does: it builds a **Table of Contents (Neural Tree Index)** first, and then agentically navigates to the exact pages needed to answer a query.
+
+---
+
+## 📈 Advantages vs. Traditional RAG
+
+| Feature | Traditional Vector RAG | Vectorless RAG (PageIndex) |
+| :--- | :--- | :--- |
+| **Data Structure** | Unordered Vector Chunks | Hierarchical JSON Tree |
+| **Context Retention** | Poor (Chunks are isolated) | Perfect (Full pages retrieved) |
+| **Search Method** | Nearest Neighbor (Math) | Semantic Navigation (Reasoning) |
+| **Infrastructure** | Vector DB + Embedding Models | Simple JSON Logs |
+| **Accuracy** | Hit or Miss (Top-K) | High (Surgical Intent-based) |
+| **Citations** | Difficult/Approximated | Exact (Section + Page Number) |
+
+---
+
+## 🧠 Multi-Model Intelligence (Failover Logic)
+
+This project features a **Professional-Grade LLM Orchestration** layer using LiteLLM. 
+
+### Dual-Engine Resilience:
+- **Primary Engine**: **Groq (Llama-3.3-70b)** — Chosen for its insane speed (300+ tokens/sec) to build indices and query results in real-time.
+- **Secondary Engine**: **Google Gemini 1.5 Flash** — High reliability and massive context window.
+
+### Intelligent Switching Logic:
+1. **The Lead**: System always attempts to use **Groq** first for maximum performance.
+2. **Auto-Failover**: If Groq hits a rate limit (`429`) or is unavailable, the system **internally and instantly switches** to **Gemini**.
+3. **Consensus Retrieval**: If both are available, the system can be configured to use the most cost-effective path depending on the token count of the document.
+
+---
+
+## 💰 Real-World Financial Impact
+
+**Vectorless RAG is designed to save money in production environments:**
+
+1. **Zero Vector DB Costs**: No monthly subscriptions for Pinecone or managed Weaviate. The "database" is local JSON.
+2. **Reduced Embedding API Bills**: Traditional RAG requires embedding every chunk. For a 1000-page document, this costs dollars. In Vectorless RAG, we only run the LLM once to index.
+3. **Smarter Token Usage**: Instead of stuffing 10 different "relevant" chunks into a prompt, we inject 2-3 specific pages. This keeps your query token count low and your LLM bills even lower.
+
+---
+
+## 🏗️ Technical Architecture
+
+```mermaid
+graph TD
+    A[PDF/Document Upload] --> B[PyMuPDF Page Extraction]
+    B --> C[Neural Tree Indexer]
+    C --> D[Hierarchical JSON Tree]
+    D --> E[Real-time 3D Viz - Three.js]
+    
+    UserQuery[User Question] --> F[Tree Agent]
+    F --> G{Search Tree}
+    G --> H[Identify Relevant Nodes]
+    H --> I[Fetch Specific Raw Pages]
+    I --> J[Context-Injection Answer]
+    J --> Final[Response with Page Citations]
+```
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend**: Python 3.10+, FastAPI, Uvicorn.
+- **Frontend**: Vite, React, Three.js (3D Graph), GSAP (Animations).
+- **LLM Layer**: LiteLLM (Groq, Gemini, Ollama support).
+- **Parsing**: PyMuPDF (High-speed document reading).
+
+---
+
+## 🚀 Setup & Installation
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/siddharthth5135/RAG_PageIndex.git
+cd RAG_PageIndex
+```
+
+### 2. Environment Configuration
+Create a `.env` file in the root directory:
+```env
+GROQ_API_KEY=your_groq_key
+GEMINI_API_KEY=your_gemini_key
+```
+
+### 3. Backend Setup
+```bash
+# It is recommended to use a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+pip install -r requirements.txt
+python fastapi_server.py
+```
+
+### 4. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 5. Deployment
+To run the production-ready build:
+```bash
+cd frontend
+npm run build
+cd ..
+python fastapi_server.py
+```
+Access the dashboard at `http://localhost:8000`.
+
+---
+
+## 🛡️ License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+*Built with ❤️ for the future of Context-Aware AI.*

@@ -1,8 +1,7 @@
 import pypdf
 import json
 import os
-from litellm import acompletion
-from src.database.db_utils import AsyncLiteLLMClient
+from src.agent.llm_provider import smart_completion
 
 async def build_tree_index(pdf_path: str, model_name: str, doc_name: str, logger=None):
     # Step 1: Extract pages
@@ -44,7 +43,7 @@ PAGES:
     if logger:
         logger.info("Sending command to LLM to build tree index. This might take a bit...")
 
-    response = await acompletion(
+    response = await smart_completion(
         model=model_name,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1
