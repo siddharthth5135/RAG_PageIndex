@@ -1,16 +1,23 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import json
 import asyncio
+import threading
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import shutil
+from dotenv import load_dotenv
+
+# Load API keys from .env
+load_dotenv()
 
 # Import existing backend modules
-from src.document_parser.page_index_md import md_to_tree
-from src.document_parser.parser_utils import ConfigLoader
-from src.database.db_utils import AsyncLiteLLMClient
-from src.agent.retriever import TracingNeo4jRetriever
+from src.document_parser.tree_indexer import build_tree_index
+from src.agent.tree_agent import execute_tree_query
 
 app = FastAPI(title="Vectorless RAG API")
 
@@ -28,118 +35,117 @@ os.makedirs("./uploads", exist_ok=True)
 class QueryRequest(BaseModel):
     query: str
     doc_name: str
-    model: str = "ollama/qwen2.5-coder:7b"
+    model: str = "gemini/gemini-2.5-flash"
+
+# Helper for streaming logs
+class StreamLogger:
+    def __init__(self, callback):
+        self.callback = callback
+    def info(self, msg):
+        if isinstance(msg, dict):
+            msg = json.dumps(msg)
+        self.callback(f"LOG:{msg}")
+    def error(self, msg):
+        self.callback(f"ERR:{msg}")
 
 @app.post("/upload")
-def upload_document(file: UploadFile = File(...), model: str = Form("ollama/qwen2.5-coder:7b")):
-    try:
-        file_loc = f"./uploads/{file.filename}"
-        with open(file_loc, "wb+") as f:
-            shutil.copyfileobj(file.file, f)
-            
-        doc_id = os.path.splitext(file.filename)[0]
-        output_file = f"./results/{doc_id}_structure.json"
-        
-        # 1. Parse Document to Tree based on extension
-        is_pdf = file_loc.lower().endswith('.pdf')
-        toc = {}
-        
-        if is_pdf:
-            from src.document_parser.page_index import page_index_main, config
-            pdf_opt = config(
-                model=model,
-                toc_check_page_num=20,
-                max_page_num_each_node=10,
-                max_token_num_each_node=20000,
-                if_add_node_id='yes',
-                if_add_node_summary='yes',
-                if_add_doc_description='no',
-                if_add_node_text='no'
-            )
-            toc = page_index_main(file_loc, pdf_opt)
-        else:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            toc = loop.run_until_complete(md_to_tree(
-                md_path=file_loc,
-                if_thinning=False,
-                min_token_threshold=5000,
-                if_add_node_summary="yes",
-                summary_token_threshold=200,
-                model=model,
-                if_add_doc_description="no",
-                if_add_node_text="no",
-                if_add_node_id="yes"
-            ))
-        
-        if not toc or not isinstance(toc, dict):
-            raise Exception("Parsing complete but the LLM failed to generate a valid structural tree.")
+async def upload_document(file: UploadFile = File(...), model: str = Form("gemini/gemini-2.5-flash")):
+    file_loc = f"./uploads/{file.filename}"
+    with open(file_loc, "wb+") as f:
+        shutil.copyfileobj(file.file, f)
+    
+    doc_id = os.path.splitext(file.filename)[0]
+    
+    async def stream_generator():
+        q = asyncio.Queue()
+        loop = asyncio.get_event_loop()
 
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(toc, f, indent=2, ensure_ascii=False)
-            
-        # 2. Ingest to Neo4j (Optional - Standalone mode uses JSON directly)
-        # ingest_json(output_file)
-        
-        # Extract the flat nodes list for frontend render
-        nodes = []
-        edges = []
-        
-        def traverse(node_data, parent_idx=None):
-            my_idx = len(nodes)
-            cur_id = node_data.get('node_id') or node_data.get('id') or str(my_idx)
-            nodes.append({
-                "id": my_idx,
-                "real_id": cur_id,
-                "label": node_data.get('title', 'Untitled'),
-                "level": node_data.get('page_number', 0) if isinstance(node_data.get('page_number'), int) else 0,
-                "summary": node_data.get('summary', '')
-            })
-            if parent_idx is not None:
-                edges.append({"source": parent_idx, "target": my_idx})
+        def log_callback(msg):
+            loop.call_soon_threadsafe(q.put_nowait, msg)
+
+        def run_parser():
+            try:
+                s_logger = StreamLogger(log_callback)
+                s_logger.info("CORE_ENGINE_START: Initializing Neural Parser Phase 1...")
                 
-            # Fallback for both naming conventions
-            children = node_data.get('nodes') or node_data.get('sub_sections') or []
-            for child in children:
-                traverse(child, my_idx)
+                # Execute new build_tree_index logic
+                # Need to run async logic inside this thread
+                async def build():
+                    return await build_tree_index(file_loc, model, doc_id, logger=s_logger)
                 
-        if toc.get('structure'):
-            traverse({"title": f"{doc_id}.pdf", "node_id": "0000", "nodes": toc['structure']})
-        else:
-            # Check if toc itself is the list (older parser behavior)
-            if isinstance(toc, list):
-                for item in toc:
-                    traverse(item)
-            else:
-                traverse({"title": "Root Document (Structure Empty)", "id": "0000"})
-        
-        return {
-            "status": "success",
-            "doc_name": doc_id,
-            "graph": {"nodes": nodes, "edges": edges}
-        }
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return {
-            "status": "error",
-            "message": f"Tree Generation Error: {str(e)}",
-            "graph": None
-        }
+                tree_json = asyncio.run(build())
+                
+                # To support the frontend tree viz, we structure the output "graph"
+                nodes = []
+                edges = []
+                # Simple recursive traversal to flatten tree for UI
+                def traverse(node_list, parent_idx=None):
+                    for node_data in node_list:
+                        if not isinstance(node_data, dict):
+                            continue
+                        my_idx = len(nodes)
+                        cur_id = node_data.get('node_id', str(my_idx))
+                        
+                        nodes.append({
+                            "id": my_idx, 
+                            "real_id": cur_id, 
+                            "label": node_data.get('title', 'Untitled'), 
+                            "level": node_data.get('start_page', 0), 
+                            "summary": node_data.get('summary', '')
+                        })
+                        if parent_idx is not None: 
+                            edges.append({"source": parent_idx, "target": my_idx})
+                        
+                        if "sub_nodes" in node_data:
+                            traverse(node_data["sub_nodes"], my_idx)
 
+                # Expect tree_json could be dict or list
+                if isinstance(tree_json, dict):
+                    if "sub_nodes" in tree_json:
+                        traverse([tree_json])
+                    else:
+                        # wrap as root
+                        traverse([{"title": f"{doc_id}.pdf", "node_id": "0000", "sub_nodes": tree_json}])
+                elif isinstance(tree_json, list):
+                    traverse(tree_json)
 
+                final_data = {"status": "success", "doc_name": doc_id, "graph": {"nodes": nodes, "edges": edges}}
+                
+                try:
+                    s_logger.info("JSON_READY")
+                    log_callback(f"FINAL:{json.dumps(final_data)}")
+                except:
+                    log_callback(f"FINAL:{json.dumps(final_data, default=str)}")
+                log_callback("DONE:SUCCESS")
+
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                log_callback(f"ERR:CORE_EXCEPTION: {str(e)}")
+                log_callback("DONE:ERROR")
+
+        # Start parser in a separate thread
+        thread = threading.Thread(target=run_parser)
+        thread.start()
+
+        while True:
+            msg = await q.get()
+            yield f"data: {msg}\n\n"
+            if msg.startswith("DONE:"):
+                break
+
+    return StreamingResponse(stream_generator(), media_type="text/event-stream")
 
 
 @app.post("/query")
 async def execute_query(req: QueryRequest):
-    retriever = TracingNeo4jRetriever(doc_name=req.doc_name, model_name=req.model)
     try:
-        result = await retriever.retrieve_with_trace(req.query)
+        result = await execute_tree_query(req.query, req.doc_name, req.model)
         return {"status": "success", "result": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-    finally:
-        await retriever.close()
+
+app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn

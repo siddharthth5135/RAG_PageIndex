@@ -1,0 +1,4 @@
+{
+  "status": "success",
+  "result": "On page 2, net income reached $5.2 billion. Cloud services contributed to 60% of total revenue (On page 2)."
+}

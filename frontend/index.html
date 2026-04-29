@@ -1,99 +1,579 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neural Nexus | Vectorless RAG Agent</title>
+  <title>VectorlessRAG | The Cinematic Reveal</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;600;800&display=swap"
+    rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,400,700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="/src/style.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
-<body class="neural-nexus">
-  <div class="background-void">
-    <div class="gradient-glow top-left"></div>
-    <div class="gradient-glow bottom-right"></div>
-  </div>
 
-  <div id="nexus-app">
-    <!-- Cyber Header -->
-    <header class="cyber-header">
-      <div class="logo-group">
-        <span class="logo-icon">▲</span>
-        <h1>NEURAL <span class="accent">NEXUS</span></h1>
+<body class="vectorless-rag dark-mode">
+  <button id="mode-toggle-btn" class="glass-btn small-btn" style="position: fixed; top: 20px; right: 20px; z-index: 999999; backdrop-filter: blur(20px); border: 1px solid var(--teal); color: var(--teal); padding: 10px 20px; border-radius: 30px; font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.5); text-transform: uppercase; font-weight: 700; box-shadow: 0 0 15px rgba(0,0,0,0.5);">Switch to Vector RAG</button>
+
+  <canvas id="aether-canvas"></canvas>
+
+  <div id="loader" class="loader-overlay">
+    <div class="loader-content">
+      <h1 class="font-hero teal">VECTORLESS_RAG</h1>
+      <div class="progress-bar-container">
+        <div id="loading-progress" class="progress-fill"></div>
       </div>
-      <div id="status-chip" class="status-chip">
-        <span class="indicator pulse-green"></span>
-        <span class="label">SYSTEM: ONLINE</span>
-      </div>
-    </header>
-
-    <main class="dashboard-grid">
-      <!-- Left: Agent Logs -->
-      <section id="terminal-pane" class="glass-pane logs">
-        <div class="pane-header">
-          <span class="label">AGENT REASONING</span>
-          <span class="terminal-id">LOG_TX: 0x9928</span>
-        </div>
-        <div id="agent-logs" class="log-stream">
-          <div class="log-entry system">[SYSTEM]: Initializing Neural Nexus Engine...</div>
-        </div>
-      </section>
-
-      <!-- Center: The Graph Field -->
-      <section id="graph-pane" class="graph-viewport">
-        <div id="graph-container">
-          <!-- GSAP Visual Graph Here -->
-          <svg id="main-svg" preserveAspectRatio="xMidYMid meet"></svg>
-        </div>
-        <div id="empty-state" class="empty-state">
-          <h2>KNOWLEDGE FIELD: INACTIVE</h2>
-          <p>UPLOAD A STRUCTURED PDF TO BEGIN NEURAL INDEXING</p>
-        </div>
-      </section>
-
-      <!-- Right: Processing & Meta -->
-      <section id="control-pane" class="glass-pane controls">
-          <div class="meta-section">
-            <div class="pane-header"><span class="label">DOCUMENT ANALYTICS</span></div>
-            <div id="doc-meta" class="meta-stats">
-              <p>DOC_ID: <span class="stat-val">NONE</span></p>
-              <p>TOKENS_SUM: <span class="stat-val">---</span></p>
-              <p>HIERARCHY: <span class="stat-val">INACTIVE</span></p>
-            </div>
-          </div>
-
-          <div class="upload-section">
-            <input type="file" id="fileInput" hidden accept="application/pdf">
-            <button id="uploadBtn" class="premium-btn">
-              <span class="btn-text">INITIALIZE UPLOAD</span>
-              <div class="btn-glow"></div>
-            </button>
-          </div>
-      </section>
-    </main>
-
-    <!-- Bottom: Retrieval Console -->
-    <footer class="retrieval-console">
-      <div class="search-matrix">
-        <div class="scanning-light"></div>
-        <input type="text" id="queryInput" placeholder="PROMPT THE AGENT (e.g., Explain the financial risks)...">
-        <button id="searchBtn" class="search-trigger">
-          <span class="logo-icon">►</span>
-        </button>
-      </div>
-    </footer>
-  </div>
-
-  <!-- Retrieval Result Overlay -->
-  <div id="result-overlay" class="result-overlay hidden">
-    <div class="overlay-glass">
-      <button id="closeOverlay" class="close-btn">×</button>
-      <h2>RETRIEVED CONTEXT</h2>
-      <div id="resultContent" class="result-content-area"></div>
+      <p class="font-mono teal opacity-50">INITIALIZING_NEURAL_FIELD...</p>
     </div>
   </div>
 
+  <!-- MAIN CONTENT AREA -->
+  <main id="vectorless-main" class="page-container">
+    <!-- HERO -->
+    <section class="section-hero">
+      <div class="container">
+        <h1 id="hero-title" class="massive-text font-hero ivory">VECTORLESS_RAG</h1>
+        <p id="hero-subtext" class="sub-hero">REDEFINING THE ARCHITECTURE OF <span class="orange">RETRIEVAL</span>.</p>
+      </div>
+    </section>
+
+    <!-- TRADITIONAL RAG -->
+    <section class="section-content">
+      <div class="grid-layout">
+        <div class="text-block">
+          <h2 class="rag-title font-hero ivory">Old Traditional RAG</h2>
+          <ul class="rag-points">
+            <li><strong>Indexing pipeline:</strong> Documents are chunked, converted into embeddings, and stored in a vector database for efficient similarity search.</li>
+            <li><strong>Retrieval pipeline:</strong> The user query is embedded and matched against stored vectors to fetch the most relevant chunks.</li>
+            <li><strong>Generation (Augmentation + LLM):</strong> Retrieved context is added to the query and passed to the LLM to generate an informed response.</li>
+          </ul>
+        </div>
+        <div class="visual-block">
+          <div class="hologram-frame">
+            <img src="/diagram.png" class="rag-diagram" alt="RAG Flow Diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIMITATIONS (CLEAN GLASS) -->
+    <section class="section-content">
+      <div class="glass-card full-width">
+        <div class="card-header-flex">
+          <span class="danger-icon-wrap">
+            <svg class="danger-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </span>
+          <h2 class="font-hero teal">CRITICAL LIMITATIONS</h2>
+        </div>
+        <div class="limitations-grid">
+          <div class="limitation-item">
+            <strong>The Approximation Trap</strong>
+            <p>Vectors turn precise data into "close-enough" numbers, often missing the exact truth for a generic neighbor.</p>
+          </div>
+          <div class="limitation-item">
+            <strong>Structural Fragility</strong>
+            <p>Traditional RAG flattens hierarchies, destroying context that lives between document sections.</p>
+          </div>
+          <div class="limitation-item">
+            <strong>Scaling Debt</strong>
+            <p>Vector databases are infrastructure-intensive. Complexity grows exponentially with your data.</p>
+          </div>
+          <div class="limitation-item">
+            <strong>The Black Box</strong>
+            <p>Debugging vector retrieval is impossible. When matches fail, you have no visibility into the "Why."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE VISION: THE NARRATIVE OVERHAUL -->
+    <section class="section-vision">
+      <div class="container overflow-visible">
+        <div class="vision-header center-text mb-80">
+          <h2 class="font-hero teal mb-2">The Architecture of Truth</h2>
+          <p class="font-mono ivory opacity-50">FROM PROBABILISTIC GUESSING TO DETERMINISTIC ROUTING.</p>
+        </div>
+
+        <div class="vision-timeline">
+          <!-- STEP 1: THE PROBLEM -->
+          <div class="vision-step">
+            <div class="step-visual">
+              <div class="vector-chaos" id="chaos-visual">
+                <canvas id="chaos-canvas"></canvas>
+                <div class="chaos-overlay">
+                  <span class="warning-text">THE VECTOR HAYSTACK</span>
+                </div>
+              </div>
+            </div>
+            <div class="step-text">
+              <h3 class="font-hero teal">Step 1: The Problem of Approximation</h3>
+              <p>Traditional RAG turns your documents into a <strong>chaotic cloud of numbers</strong>. When you query, it tries to find the "closest" neighbor. But "close" isn't always correct. <br><br> In a 500-page report, "2023 Revenue" might look statistically identical to "2022 Loss" in vector space. This is where hallucinations are born.</p>
+              <div class="step-badge badge-red">PROBABILISTIC GUESS</div>
+            </div>
+          </div>
+
+          <!-- STEP 2: THE EVOLUTION -->
+          <div class="vision-step reverse">
+            <div class="step-visual">
+              <div class="workflow-diagram-container">
+                <img src="/workflow_diagram.png" alt="PageIndex Workflow Diagram" class="workflow-img">
+              </div>
+            </div>
+            <div class="step-text">
+              <h3 class="font-hero teal">Step 2: The Structural DNA</h3>
+              <p>Vectorless RAG doesn't flatten your data. It <strong>unfolds the document’s hierarchy</strong>. It indexes the relationship between Chapters, Sections, Paragraphs, and Sentences. <br><br> Instead of a cloud, we build a <strong>Semantic Map</strong>. We know exactly where every piece of information lives relative to its context.</p>
+              <div class="step-badge badge-teal">STRUCTURAL PRECISION</div>
+            </div>
+          </div>
+
+          <!-- STEP 3: THE RESULT -->
+          <div class="vision-step">
+            <div class="step-visual">
+              <div class="retrieval-comparison">
+                <div class="comp-box comp-classic">
+                  <span class="comp-label">CLASSIC RAG RESULT</span>
+                  <div class="blurry-text">Finding... I think it's Section 1... mixed with Section 4... [HALLUCINATION DETECTED]</div>
+                  <div class="comp-accuracy acc-30">30% Accuracy</div>
+                </div>
+                <div class="comp-box comp-vectorless">
+                  <span class="comp-label">VECTORLESS RESULT</span>
+                  <div class="clear-text">"The Q4 Revenue for 2023 was exactly $12.4M." <br><br> [SOURCE: CHPT 4, SECT 2, PARA 3]</div>
+                  <div class="comp-accuracy acc-100">100% Deterministic</div>
+                </div>
+              </div>
+            </div>
+            <div class="step-text">
+              <h3 class="font-hero teal">Step 3: The Moment of Truth</h3>
+              <p>The difference is the <strong>Guarantee</strong>. Vectorless RAG doesn't "think" it found the answer; it <strong>knows</strong> it did. <br><br> By traversing the tree from Root to Leaf, the system provides 100% deterministic recall. You get the exact paragraph you need, every single time, with a verifiable source path.</p>
+              <div class="step-badge badge-gold">THE TRUTH ENGINE</div>
+            </div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- THE TREE DEEP DIVE (SCROLL TRIGGERED) -->
+    <section id="section-tree-dive" class="section-tree-dive">
+      <div class="tree-dive-sticky">
+        <div class="tree-narrative">
+          <h2 class="font-hero teal">The Tree: How Data Is Indexed</h2>
+          <p class="font-mono ivory">Documents aren't flat. They have hierarchies. <br> Vectorless RAG exploits this hierarchy.</p>
+        </div>
+        
+        <div id="three-tree-container">
+          <!-- Three.js will inject canvas here -->
+        </div>
+
+        <div class="page-index-panel glass-card">
+          <div class="panel-header font-mono teal">PAGE_INDEX_MONITOR</div>
+          <div class="index-levels">
+            <div class="lvl lvl-doc"><span class="badge">DOC</span> Vectorless_Whitepaper.pdf</div>
+            <div class="lvl lvl-chap"><span class="badge">CHAP</span> Chapter 4: Structural Traversal</div>
+            <div id="active-section-lvl" class="lvl lvl-sect"><span class="badge">SECT</span> Machine Learning</div>
+            <div class="lvl lvl-para"><span class="badge">PARA</span> High-dimensional indexing...</div>
+          </div>
+          <div class="indexing-visual">
+            <div class="scan-line"></div>
+          </div>
+        </div>
+
+        <div id="result-card" class="floating-result-card glass-card">
+          <div class="card-glow"></div>
+          <h4 class="font-mono teal">MATCH_FOUND_NODE_102</h4>
+          <p class="font-mono ivory">"Linear Regression definition: A linear approach to modeling the relationship between a scalar response and one or more explanatory variables..."</p>
+          <div class="relevance-bar"><div class="fill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRY VECTORLESS RAG (THE HEART) -->
+    <section id="try-section" class="section-content builder-box">
+      <div class="glass-master-panel premium-dashboard">
+        
+        <div class="dashboard-header">
+           <div class="header-titling">
+              <div class="section-badge neon-badge font-mono teal">INTERACTIVE_LAB_V2</div>
+              <h2 class="font-hero teal glitched-text" data-text="TRY VECTORLESS RAG">Try Vectorless RAG</h2>
+           </div>
+           <p class="font-mono ivory opacity-50 text-right-desktop">EXPERIENCE DETERMINISTIC<br>RETRIEVAL IN REAL-TIME.</p>
+        </div>
+
+        <div class="dashboard-body">
+            <!-- LEFT PANEL: Controls & Terminal -->
+            <div class="dashboard-sidebar">
+                
+                <div class="panel-section control-station">
+                    <h4 class="font-mono teal mb-2 sub-heading-glow"><span class="pulse-dot"></span> SYSTEM_CONTROLS</h4>
+                    <div class="action-grid-stacked">
+                        <input type="file" id="fileInput" style="display: none;" accept=".pdf,.md">
+                        <button id="uploadBtn" class="cyber-btn hover-teal">
+                          <span class="btn-icon">↑</span> SELECT_DOCUMENT
+                        </button>
+                        <button id="searchBtn" class="cyber-btn-primary pulse-glow" disabled>
+                          <span class="btn-icon">⚡</span> COMPILE_STRUCTURE
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section terminal-station">
+                    <h4 class="font-mono teal mb-2 sub-heading-glow">NEURAL_EVENT_LOG</h4>
+                    <div class="system-monitor cyber-inner">
+                      <div id="agent-logs" class="log-stream-pixel font-mono">
+                        <div class="log-entry"><span class="log-time">[00:00:00.000]</span> <span class="log-success">SYSTEM_READY: Await User Input...</span></div>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="panel-section query-station">
+                    <div class="prompt-hud cyber-hud">
+                        <div class="prompt-arrow teal">>></div>
+                        <input type="text" id="queryInput" class="font-mono" placeholder="Awaiting structure generation..." disabled>
+                        <button id="askBtn" class="query-submit" disabled>ASK</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL: Display Engine -->
+            <div class="dashboard-main">
+                <div class="dynamic-visual-panel premium-bezel">
+                   <div class="panel-header-controls">
+                      <button id="toggleViewBtn" class="glass-btn small-btn view-toggle-btn" style="display:none; position: absolute; z-index: 10;">
+                        <span class="btn-icon">📋</span> List View
+                      </button>
+                   </div>
+                   
+                   <!-- Corner Decorations -->
+                   <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+                   
+                   <div id="dynamic-tree-container">
+                     <!-- Dynamic Three.js Tree will be injected here -->
+                     <div class="visual-overlay">
+                       <div class="scanning-fx"></div>
+                       <span class="font-mono teal opacity-50 pulse-text">AWAITING_INGESTION_DATA...</span>
+                     </div>
+                   </div>
+                   <div id="static-tree-container" class="hidden" style="display: none; position: absolute; inset: 0; top: 0px; overflow-y: auto; padding: 60px 20px 20px 20px; background: rgba(5, 8, 15, 0.95); text-align: left;">
+                     <div id="static-tree-root"></div>
+                   </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE TRUTH: KEY DIFFERENCES (Now at last) -->
+    <section class="section-deep-truth">
+      <div class="container">
+        <h2 class="font-hero teal center-text mb-40">RETHINKING RETRIEVAL</h2>
+        <div class="truth-grid">
+          <div class="truth-card">
+            <h3 class="font-hero teal">VECTOR-BASED RAG</h3>
+            <p>Traditional systems translate your text into 1,536 numbers (embeddings) and store them blindly. When you ask a question, it finds the "nearest" numbers. This is a <strong>statistical guess</strong>. If two unrelated sentences use similar words, the vector system will hallucinate them together.</p>
+          </div>
+          <div class="truth-card">
+            <h3 class="font-hero teal">VECTORLESS (TREE) RAG</h3>
+            <p>Vectorless RAG treats your document like a <strong>Knowledge Graph</strong>. It indexes the structural DNA: chapters, sections, and semantic clusters. Retrieval isn't a proximity guess; it's a <strong>logical traversal</strong>. It knows exactly where the truth is because it understands the hierarchy of the source.</p>
+          </div>
+          <div class="truth-card">
+            <h3 class="font-hero teal">WHY IT MATTERS?</h3>
+            <p>Vectors lose the "Contextual Thread." Tree-based systems preserve it. You get <strong>Deterministic Recall</strong>, meaning if the answer is in Section 4.2, the system will *always* find Section 4.2, without being distracted by similar-sounding text in Section 1.0.</p>
+          </div>
+          <div class="truth-card">
+            <h3 class="font-hero teal">COST & EXPLAINABILITY</h3>
+            <p>Traditional RAG requires expensive embedding models and complex vector databases. Vectorless RAG is <strong>model-agnostic</strong> and fully explainable. You can see the exact path taken to find an answer, making it 10x easier to debug and trust.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+<main id="vector-main" class="page-container hidden" style="display:none;">
+    <!-- HERO -->
+    <section class="section-hero">
+      <div class="container">
+        <h1 id="hero-title" class="massive-text font-hero ivory">VECTOR_RAG</h1>
+        <p id="hero-subtext" class="sub-hero">THE INDUSTRY STANDARD PIPELINE FOR  <span class="orange">RETRIEVAL</span>.</p>
+      </div>
+    </section>
+
+    <!-- TRADITIONAL RAG -->
+    <section class="section-content">
+      <div class="grid-layout">
+        <div class="text-block">
+          <h2 class="rag-title font-hero ivory">The Vector Approach</h2>
+          <ul class="rag-points">
+            <li><strong>Indexing pipeline:</strong> Documents are chunked, converted into embeddings, and stored in a vector database for efficient similarity search.</li>
+            <li><strong>Retrieval pipeline:</strong> The user query is embedded and matched against stored vectors to fetch the most relevant chunks.</li>
+            <li><strong>Generation (Augmentation + LLM):</strong> Retrieved context is added to the query and passed to the LLM to generate an informed response.</li>
+          </ul>
+        </div>
+        <div class="visual-block">
+          <div class="hologram-frame">
+            <img src="/diagram.png" class="rag-diagram" alt="RAG Flow Diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIMITATIONS (CLEAN GLASS) -->
+    <section class="section-content">
+      <div class="glass-card full-width">
+        <div class="card-header-flex">
+          <span class="danger-icon-wrap">
+            <svg class="danger-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </span>
+          <h2 class="font-hero teal">CRITICAL LIMITATIONS</h2>
+        </div>
+        <div class="limitations-grid">
+          <div class="limitation-item">
+            <strong>The Approximation Trap</strong>
+            <p>Vectors turn precise data into "close-enough" numbers, often missing the exact truth for a generic neighbor.</p>
+          </div>
+          <div class="limitation-item">
+            <strong>Structural Fragility</strong>
+            <p>Traditional RAG flattens hierarchies, destroying context that lives between document sections.</p>
+          </div>
+          <div class="limitation-item">
+            <strong>Scaling Debt</strong>
+            <p>Vector databases are infrastructure-intensive. Complexity grows exponentially with your data.</p>
+          </div>
+          <div class="limitation-item">
+            <strong>The Black Box</strong>
+            <p>Debugging vector retrieval is impossible. When matches fail, you have no visibility into the "Why."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE VISION: THE NARRATIVE OVERHAUL -->
+    <section class="section-vision">
+      <div class="container overflow-visible">
+        <div class="vision-header center-text mb-80">
+          <h2 class="font-hero teal mb-2">The Architecture of Truth</h2>
+          <p class="font-mono ivory opacity-50">FROM PROBABILISTIC GUESSING TO DETERMINISTIC ROUTING.</p>
+        </div>
+
+        <div class="vision-timeline">
+          <!-- STEP 1: THE PROBLEM -->
+          <div class="vision-step">
+            <div class="step-visual">
+              <div class="vector-chaos" id="chaos-visual">
+                <canvas id="chaos-canvas"></canvas>
+                <div class="chaos-overlay">
+                  <span class="warning-text">THE VECTOR HAYSTACK</span>
+                </div>
+              </div>
+            </div>
+            <div class="step-text">
+              <h3 class="font-hero teal">Step 1: The Problem of Scalability</h3>
+              <p>Traditional RAG turns your documents into a <strong>efficient mathematical space</strong>. When you query, it tries to find the "closest" neighbor. But "close" isn't always correct. <br><br> In a 500-page report, "2023 Revenue" might look statistically identical to "2022 Loss" in vector space. This is where hallucinations are born.</p>
+              <div class="step-badge badge-red">PROBABILISTIC GUESS</div>
+            </div>
+          </div>
+
+          <!-- STEP 2: THE EVOLUTION -->
+          <div class="vision-step reverse">
+            <div class="step-visual">
+              <div class="workflow-diagram-container">
+                <img src="/workflow_diagram.png" alt="PageIndex Workflow Diagram" class="workflow-img">
+              </div>
+            </div>
+            <div class="step-text">
+              <h3 class="font-hero teal">Step 2: The Semantic Cloud</h3>
+              <p>Vector RAG doesn't flatten your data. It <strong>creates proximity embeddings’s hierarchy</strong>. It indexes the relationship between Chapters, Sections, Paragraphs, and Sentences. <br><br> Instead of a cloud, we build a <strong>Semantic Map</strong>. We know exactly where every piece of information lives relative to its context.</p>
+              <div class="step-badge badge-teal">PROXIMITY SEARCH</div>
+            </div>
+          </div>
+
+          <!-- STEP 3: THE RESULT -->
+          <div class="vision-step">
+            <div class="step-visual">
+              <div class="retrieval-comparison">
+                <div class="comp-box comp-classic">
+                  <span class="comp-label">CLASSIC RAG RESULT</span>
+                  <div class="blurry-text">Finding... I think it's Section 1... mixed with Section 4... [HALLUCINATION DETECTED]</div>
+                  <div class="comp-accuracy acc-30">30% Accuracy</div>
+                </div>
+                <div class="comp-box comp-vectorless">
+                  <span class="comp-label">VECTORLESS RESULT</span>
+                  <div class="clear-text">"The Q4 Revenue for 2023 was exactly $12.4M." <br><br> [SOURCE: CHPT 4, SECT 2, PARA 3]</div>
+                  <div class="comp-accuracy acc-100">100% Deterministic</div>
+                </div>
+              </div>
+            </div>
+            <div class="step-text">
+              <h3 class="font-hero teal">Step 3: The Moment of Retrieval</h3>
+              <p>The difference is the <strong>Guarantee</strong>. Vector RAG doesn't "think" it found the answer; it <strong>knows</strong> it did. <br><br> By traversing the tree from Root to Leaf, the system provides 100% deterministic recall. You get the exact paragraph you need, every single time, with a verifiable source path.</p>
+              <div class="step-badge badge-gold">THE PROBABILISTIC ENGINE</div>
+            </div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- THE TREE DEEP DIVE (SCROLL TRIGGERED) -->
+    <section id="section-tree-dive" class="section-tree-dive">
+      <div class="tree-dive-sticky">
+        <div class="tree-narrative">
+          <h2 class="font-hero teal">The Space: How Vectors Are Scattered</h2>
+          <p class="font-mono ivory">Documents aren't flat. They have hierarchies. <br> Vector RAG exploits this hierarchy.</p>
+        </div>
+        
+        <div id="three-tree-container">
+          <!-- Three.js will inject canvas here -->
+        </div>
+
+        <div class="page-index-panel glass-card">
+          <div class="panel-header font-mono teal">VECTOR_DB_MONITOR</div>
+          <div class="index-levels">
+            <div class="lvl lvl-doc"><span class="badge">DOC</span> Vectorless_Whitepaper.pdf</div>
+            <div class="lvl lvl-chap"><span class="badge">CHAP</span> Chapter 4: Structural Traversal</div>
+            <div id="active-section-lvl" class="lvl lvl-sect"><span class="badge">SECT</span> Machine Learning</div>
+            <div class="lvl lvl-para"><span class="badge">PARA</span> High-dimensional indexing...</div>
+          </div>
+          <div class="indexing-visual">
+            <div class="scan-line"></div>
+          </div>
+        </div>
+
+        <div id="result-card" class="floating-result-card glass-card">
+          <div class="card-glow"></div>
+          <h4 class="font-mono teal">MATCH_FOUND_NODE_102</h4>
+          <p class="font-mono ivory">"Linear Regression definition: A linear approach to modeling the relationship between a scalar response and one or more explanatory variables..."</p>
+          <div class="relevance-bar"><div class="fill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRY VECTORLESS RAG (THE HEART) -->
+    <section id="v-try-section" class="section-content builder-box">
+      <div class="glass-master-panel premium-dashboard">
+        
+        <div class="dashboard-header">
+           <div class="header-titling">
+              <div class="section-badge neon-badge font-mono teal">INTERACTIVE_LAB_V2</div>
+              <h2 class="font-hero teal glitched-text" data-text="TRY VECTORLESS RAG">Try Standard Vector RAG</h2>
+           </div>
+           <p class="font-mono ivory opacity-50 text-right-desktop">EXPERIENCE DETERMINISTIC<br>RETRIEVAL IN REAL-TIME.</p>
+        </div>
+
+        <div class="dashboard-body">
+            <!-- LEFT PANEL: Controls & Terminal -->
+            <div class="dashboard-sidebar">
+                
+                <div class="panel-section control-station">
+                    <h4 class="font-mono teal mb-2 sub-heading-glow"><span class="pulse-dot"></span> SYSTEM_CONTROLS</h4>
+                    <div class="action-grid-stacked">
+                        <input type="file" id="vrag-fileInput" style="display: none;" accept=".pdf,.md">
+                        <button id="vrag-uploadBtn" class="cyber-btn hover-teal">
+                          <span class="btn-icon">↑</span> SELECT_DOCUMENT
+                        </button>
+                        <button id="vrag-embedBtn" class="cyber-btn-primary pulse-glow" disabled>
+                          <span class="btn-icon">⚡</span> INGEST & EMBED
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section terminal-station">
+                    <h4 class="font-mono teal mb-2 sub-heading-glow">NEURAL_EVENT_LOG</h4>
+                    <div class="system-monitor cyber-inner">
+                      <div id="vrag-terminal" class="log-stream-pixel font-mono">
+                        <div class="log-entry"><span class="log-time">[00:00:00.000]</span> <span class="log-success">SYSTEM_READY: Await User Input...</span></div>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="panel-section query-station">
+                    <div class="prompt-hud cyber-hud">
+                        <div class="prompt-arrow teal">>></div>
+                        <input type="text" id="vrag-queryInput" class="font-mono" placeholder="Awaiting vector generation..." disabled>
+                        <button id="vrag-searchBtn" class="query-submit" disabled>ASK</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL: Display Engine -->
+            <div class="dashboard-main">
+                <div class="dynamic-visual-panel premium-bezel">
+                   <div class="panel-header-controls">
+                      <button style="display:none;" id="dummy-toggle" class="glass-btn small-btn view-toggle-btn" style="display:none; position: absolute; z-index: 10;">
+                        <span class="btn-icon">📋</span> List View
+                      </button>
+                   </div>
+                   
+                   <!-- Corner Decorations -->
+                   <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+                   
+                   <div id="vrag-three-container">
+                     <!-- Dynamic Three.js Tree will be injected here -->
+                     <div class="visual-overlay">
+                       <div class="scanning-fx"></div>
+                       <span class="font-mono teal opacity-50 pulse-text">AWAITING_INGESTION_DATA...</span>
+                     </div>
+                   </div>
+                   <div id="vrag-results-panel" class="hidden" style="display: none; position: absolute; inset: 0; top: 0px; overflow-y: auto; padding: 60px 20px 20px 20px; background: rgba(5, 8, 15, 0.95); text-align: left;">
+                     <div id="vrag-retrieved-chunks"></div>
+                   </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE TRUTH: KEY DIFFERENCES (Now at last) -->
+    <section class="section-deep-truth">
+      <div class="container">
+        <h2 class="font-hero teal center-text mb-40">RETHINKING RETRIEVAL</h2>
+        <div class="truth-grid">
+          <div class="truth-card">
+            <h3 class="font-hero teal">KEYWORD SEARCH</h3>
+            <p>Traditional systems translate your text into 1,536 numbers (embeddings) and store them blindly. When you ask a question, it finds the "nearest" numbers. This is a <strong>statistical guess</strong>. If two unrelated sentences use similar words, the vector system will hallucinate them together.</p>
+          </div>
+          <div class="truth-card">
+            <h3 class="font-hero teal">VECTOR EMBEDDING RAG</h3>
+            <p>Vector RAG treats your document like a <strong>Knowledge Graph</strong>. It indexes the structural DNA: chapters, sections, and semantic clusters. Retrieval isn't a proximity guess; it's a <strong>logical traversal</strong>. It knows exactly where the truth is because it understands the hierarchy of the source.</p>
+          </div>
+          <div class="truth-card">
+            <h3 class="font-hero teal">WHY IT MATTERS?</h3>
+            <p>Vectors lose the "Contextual Thread." Tree-based systems preserve it. You get <strong>Deterministic Recall</strong>, meaning if the answer is in Section 4.2, the system will *always* find Section 4.2, without being distracted by similar-sounding text in Section 1.0.</p>
+          </div>
+          <div class="truth-card">
+            <h3 class="font-hero teal">COST & EXPLAINABILITY</h3>
+            <p>Traditional RAG requires expensive embedding models and complex vector databases. Vector RAG is <strong>model-agnostic</strong> and fully explainable. You can see the exact path taken to find an answer, making it 10x easier to debug and trust.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="cursor-ring"></div>
+  <div id="cursor-dot"></div>
+
+  <div id="cursor-ring"></div>
+  <div id="cursor-dot"></div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>

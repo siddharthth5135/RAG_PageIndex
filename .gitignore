@@ -11,3 +11,10 @@ wheels/
 
 # Sensitive
 .env
+
+# Data and Logs
+uploads/
+results/
+logs/
+*.log
+*.pdf

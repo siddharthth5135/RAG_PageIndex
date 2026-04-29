@@ -1,59 +1,57 @@
-# 🌌 NEURAL NEXUS: PREMIER VECTORLESS RAG ARCHITECTURE
+# Vectorless RAG (PageIndex Architecture)
 
-## 1. Project Overview
-**Neural Nexus** is a world-class **Vectorless RAG** system that redefines how LLMs interact with long, complex documents. Unlike traditional RAG systems that "flatten" a PDF into thousands of random chunks, Neural Nexus builds a **Hierarchical Intelligence Graph**.
+## 📌 The Core Concept
 
-### The Innovation:
-Instead of "searching" for words, the agent **Explores** your document. It starts at the top (The Table of Contents), reasons about which chapter is relevant, and "drills down" into the exact section needed to answer a query. 
+A revolutionary approach to Retrieval-Augmented Generation that **completely eliminates chunking pipelines and Vector Databases** (no Pinecone, no Chroma, no FAISS). Instead of arbitrarily breaking documents into chunks based on token limits and relying on blind mathematical similarity for retrieval, it parses the document to understand its semantic layout and preserves it as a **Hierarchical JSON Tree Index**.
 
 ---
 
-## 2. Dynamic Logic (Backend Side)
+## 🛠️ How It Was Implemented
 
-### 📂 File-by-File Explanation:
-1.  **`fastapi_server.py`**:
-    *   **The Hub**: This is your server entry point. It manages the communication between your "Neural" Frontend and the RAG logic. 
-    *   **Task Management**: When you upload a file, it delegates the work to the Parser and stores the final "Document Graph" in your local `/results` folder.
-2.  **`src/document_parser/page_index.py`**:
-    *   **The Architect**: This is arguably the most complex part of the project. It uses the LLM to analyze the structure of the PDF.
-    *   **TOC Mapping**: It identifies chapters and maps them to physical page numbers using a proprietary "Index Extractor" technique.
-    *   **Verification**: It performs a cross-check to make sure the "Tree" it built matches the actual PDF content (Accuracy Verification).
-3.  **`src/agent/retriever.py`**:
-    *   **The Explorer (Agent)**: This is where the "RAG Magic" happens. It uses a **Recursive Traversal Algorithm**.
-    *   **The Reasoning Loop**: For every query, it asks the LLM: *"Which branch of this knowledge tree should we walk down next?"*
-    *   **UI Tracing**: It emits real-time "Steps" (Eval, Chosen, Found) that my Frontend uses to animate the graph.
-4.  **`src/database/db_utils.py`**:
-    *   **The Unified API**: It abstracts away the Ollama Complexity. It’s tuned for **Qwen 2.5 Coding 7B**, ensuring fast, reliable JSON generation.
+We completely stripped down the legacy backend. The old chunking scripts, complex graph retrievers, and deep dependencies have been eliminated and replaced with a highly efficient, two-phase PageIndex architecture.
 
----
+### Phase 1: Ingest (Run once per document)
+Handled by `src/document_parser/tree_indexer.py`.
+1. **Extraction**: We use **PyMuPDF** to accurately and quickly extract raw text from PDFs on a strict page-by-page basis.
+2. **LLM Tree Generation**: The extracted text is injected into a single prompt. The LLM reads all the pages and returns a structured JSON tree containing `node_id`, `title`, concise `summary`, `start_page`, and `end_page` for every logical section and subsection.
+3. **Storage**: The tiny JSON Tree (~2-5 KB) and the raw, un-chunked pages are cleanly stored as basic JSON logs. **No Vector embeddings are generated.**
 
-## 3. How to Run the Project (Commands)
+### Phase 2: Query (Runs on every user question)
+Handled by `src/agent/tree_agent.py`.
+1. **Tree Scanning**: When a user asks a question, the LLM is given the entire JSON Tree (the Table of Contents mapping). It contextually reasons about which sections are relevant—like a human scanning a textbook's index.
+2. **Surgical Selection**: The LLM outputs an array of exact `node_id`s that target the specific information intent.
+3. **Raw Page Injection**: The engine fetches the explicit raw pages mapped to those `node_id`s (usually just 2-4 pages).
+4. **Answer & Cite**: The LLM constructs a final response using *only* those retrieved pages, providing explicit tracking of what section and page the answer came from.
 
-### Step 1: Initialize the Brain (Ollama)
-Pull the high-performance model for reasoning:
-```bash
-ollama pull qwen2.5-coder:7b
-```
-
-### Step 2: Fire up the Backend
-```bash
-uv run python fastapi_server.py
-```
-*Port: 8000*
-
-### Step 3: Launch the Neural Dashboard
-```bash
-cd frontend
-npm install
-npm run dev
-```
-*Port: 5173* (Visual result will appear here)
+### The REST Interface
+- **FastAPI Integration** (`fastapi_server.py`): Delivers the capabilities over clean `/upload` and `/query` endpoints, and streams the tree parsing generation in real-time so the frontend can visualize it beautifully using Three.js logic.
 
 ---
 
-## 4. Why this is the #1 RAG System?
-*   **Contextual Integrity**: By using the document's own structure, we never lose context of which chapter a "chunk" belongs to.
-*   **Speed**: No heavy Neo4j database. Pure, local JSON file traversal.
-*   **Visual Reasoning**: You see exactly what the AI is thinking. 
+## 🔥 Why This Is Vastly Superior to Traditional RAG
 
-**Welcome to the New Era of Document Intelligence.**
+### 1. Intent vs. Similarity (Accuracy)
+Traditional Vector RAG relies squarely on keyword/vector mathematical overlap. If a user asks a nuanced question structured completely differently than the document text, vector search fails. 
+**Vectorless RAG** uses an LLM to browse the *summaries* of sections. The LLM understands query intent and can surgically isolate where the answer lives even if vocabulary differs.
+
+### 2. Traceability and True Citations
+When Vector RAG pulls arbitrary chunks, reconstructing the true context is like piecing together confetti. 
+**Vectorless RAG** retrieves whole logical pages mapped to a specific subnode. Every generated answer cites the exact semantic section and page range. Zero black-box magic, full audit trail.
+
+### 3. Contextual Cross-Referencing
+Vector RAG cannot follow internal document logic. If a text chunk says *"Refer to Appendix G for deferred asset metrics,"* vector search hits a dead-end. 
+**Vectorless RAG** behaves agentically: the LLM identifies the reference, navigates the tree to find Appendix G, fetches those pages, and completes the logical jump.
+
+### 4. Zero Vector Infrastructure 
+Forget setting up complex, expensive ingestion pipelines to a hosted vector database. No tuning chunk sizes, no chunk overlap hacks. The "database" is entirely just a localized JSON string and a file map.
+
+### 5. Massive Cost Reduction
+Vector pipelines run up crazy embedding API costs and burn massive amounts of context stuffed with top-K chunks that might not even contain the answer. 
+With Vectorless RAG, the tree is incredibly token-light (~1-3k tokens). The indexing prompt runs once (~$0.01 for 100 pages). It guarantees surgical context payloads on every query.
+
+---
+
+## 🚀 Tech Stack
+
+*   **Backend**: Python, FastAPI, PyMuPDF, LiteLLM (Supporting completely local LLMs like Qwen2.5-Coder via Ollama).
+*   **Frontend**: React, Vite, Three.js (For real-time 3D rendering of the hierarchical tree visualization), GSAP.
