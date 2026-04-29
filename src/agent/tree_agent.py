@@ -46,8 +46,6 @@ Do not add any explanation or backticks.
         with open(raw_pages_path, "r", encoding="utf-8") as f:
             raw_pages = json.load(f)
         
-        # Determine which pages contain these node_ids by parsing the tree again
-        # Small recursive helper
         pages_to_fetch = set()
         def find_nodes(node_list):
             for n in node_list:
@@ -60,7 +58,6 @@ Do not add any explanation or backticks.
                     if "sub_nodes" in n:
                         find_nodes(n["sub_nodes"])
 
-        # If the root itself is a dict, wrap it
         if isinstance(tree_json, dict) and "sub_nodes" in tree_json:
             find_nodes([tree_json])
         elif isinstance(tree_json, list):

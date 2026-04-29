@@ -1,150 +1,97 @@
-# 🚀 Vectorless RAG: PageIndex Architecture
+# Vectorless RAG (PageIndex Architecture)
 
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/Frontend-React-61DAFB.svg?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
-[![Three.js](https://img.shields.io/badge/Visuals-Three.js-black.svg?style=flat&logo=three.js&logoColor=white)](https://threejs.org/)
-[![LiteLLM](https://img.shields.io/badge/LLM-LiteLLM-blue.svg?style=flat)](https://github.com/BerriAI/litellm)
+## 📌 The Core Concept
 
-A revolutionary, high-performance approach to Retrieval-Augmented Generation that **completely eliminates chunking pipelines and Vector Databases**. 
-
-Traditional RAG is blind; it breaks documents into mathematical chunks and hopes for the best. **Vectorless RAG** parses documents into a hierarchical semantic tree, preserving the document's logical structure for surgical precision.
+A revolutionary approach to Retrieval-Augmented Generation that **completely eliminates chunking pipelines and Vector Databases** (no Pinecone, no Chroma, no FAISS). Instead of arbitrarily breaking documents into chunks based on token limits and relying on blind mathematical similarity for retrieval, it parses the document to understand its semantic layout and preserves it as a **Hierarchical JSON Tree Index**.
 
 ---
 
-## 📑 Table of Contents
-- [🔍 Why Vectorless RAG?](#-why-vectorless-rag)
-- [📈 Advantages vs. Traditional RAG](#-advantages-vs-traditional-rag)
-- [🧠 Multi-Model Intelligence (Failover Logic)](#-multi-model-intelligence-failover-logic)
-- [💰 Real-World Financial Impact](#-real-world-financial-impact)
-- [🏗️ Technical Architecture](#️-technical-architecture)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [🚀 Setup & Installation](#-setup--installation)
+## 🛠️ The "Tank-Proof" Architecture
+
+This project implements a highly resilient, enterprise-grade LLM orchestration layer designed for absolute reliability.
+
+### 🛡️ Smart Failover & Recovery
+- **Multi-Cloud Orchestration**: Automatically failover between **Groq (Llama 3.3/3.1)** and **Google Gemini (2.5/2.0 Flash)**.
+- **Intelligent Backoff**: Built-in 5x retry logic with incremental wait times (2s, 4s, 6s) to handle API Rate Limits (429) and Service Demand Spikes (503) without crashing.
+- **Dynamic Model Discovery**: The system automatically scans your `.env` and only activates models you have keys for, prioritizing the fastest and most cost-effective "Free Tier" models first.
 
 ---
 
-## 🔍 Why Vectorless RAG?
+## 🏗️ How It Works (PageIndex Implementation)
 
-In traditional RAG, documents are sliced into arbitrary chunks (e.g., 500 tokens). This leads to:
-- **Lost Context**: A sentence in a chunk might refer to a table 10 pages away.
-- **Black Box Retrieval**: Mathematical similarity (Cosine Similarity) doesn't understand "intent."
-- **Infrastructure Overload**: Managing Vector DBs like Pinecone, Milvus, or Chroma adds cost and complexity.
+### Phase 1: Neural Ingest
+1. **Extraction**: Uses **PyMuPDF** for ultra-fast, page-aware text extraction.
+2. **LLM Indexing**: The engine builds a structured JSON tree containing `node_id`, `title`, concise `summary`, and `page_mapping` for every logical section.
+3. **Zero-Embedding Storage**: The index is stored as a tiny JSON file (~2-5 KB). **No Vector embeddings are needed.**
 
-**Vectorless RAG** treats a document like a human does: it builds a **Table of Contents (Neural Tree Index)** first, and then agentically navigates to the exact pages needed to answer a query.
+### Phase 2: Agentic Query
+1. **Semantic Navigation**: The LLM scans the section summaries (the "Table of Contents") to identify intent.
+2. **Precision Retrieval**: Only the exact pages needed are pulled into context.
+3. **Contextual Answer**: Generates responses with **exact page citations** (e.g., "See page 42, section 3.2").
 
 ---
 
-## 📈 Advantages vs. Traditional RAG
+## 🔥 Key Advantages Over Traditional RAG
 
-| Feature | Traditional Vector RAG | Vectorless RAG (PageIndex) |
+| Feature | Traditional RAG (Vector) | Vectorless RAG (PageIndex) |
 | :--- | :--- | :--- |
-| **Data Structure** | Unordered Vector Chunks | Hierarchical JSON Tree |
-| **Context Retention** | Poor (Chunks are isolated) | Perfect (Full pages retrieved) |
-| **Search Method** | Nearest Neighbor (Math) | Semantic Navigation (Reasoning) |
-| **Infrastructure** | Vector DB + Embedding Models | Simple JSON Logs |
-| **Accuracy** | Hit or Miss (Top-K) | High (Surgical Intent-based) |
-| **Citations** | Difficult/Approximated | Exact (Section + Page Number) |
+| **Logic** | Keyword/Mathematical Similarity | Semantic Intent Reasoning |
+| **Accuracy** | Blind "Top-K" chunks | Surgical Page Retrieval |
+| **Infrastructure** | Complex Vector DBs | Simple JSON Mapping |
+| **Traceability** | Confetti-like fragments | Explicit Page & Section Citations |
+| **Cost** | Expensive Embedding APIs | Token-Light Indexing (~$0.01/100 pgs) |
 
 ---
 
-## 🧠 Multi-Model Intelligence (Failover Logic)
+## 🚀 Setup & Execution
 
-This project features a **Professional-Grade LLM Orchestration** layer using LiteLLM. 
-
-### Dual-Engine Resilience:
-- **Primary Engine**: **Groq (Llama-3.3-70b)** — Chosen for its insane speed (300+ tokens/sec) to build indices and query results in real-time.
-- **Secondary Engine**: **Google Gemini 1.5 Flash** — High reliability and massive context window.
-
-### Intelligent Switching Logic:
-1. **The Lead**: System always attempts to use **Groq** first for maximum performance.
-2. **Auto-Failover**: If Groq hits a rate limit (`429`) or is unavailable, the system **internally and instantly switches** to **Gemini**.
-3. **Consensus Retrieval**: If both are available, the system can be configured to use the most cost-effective path depending on the token count of the document.
-
----
-
-## 💰 Real-World Financial Impact
-
-**Vectorless RAG is designed to save money in production environments:**
-
-1. **Zero Vector DB Costs**: No monthly subscriptions for Pinecone or managed Weaviate. The "database" is local JSON.
-2. **Reduced Embedding API Bills**: Traditional RAG requires embedding every chunk. For a 1000-page document, this costs dollars. In Vectorless RAG, we only run the LLM once to index.
-3. **Smarter Token Usage**: Instead of stuffing 10 different "relevant" chunks into a prompt, we inject 2-3 specific pages. This keeps your query token count low and your LLM bills even lower.
-
----
-
-## 🏗️ Technical Architecture
-
-```mermaid
-graph TD
-    A[PDF/Document Upload] --> B[PyMuPDF Page Extraction]
-    B --> C[Neural Tree Indexer]
-    C --> D[Hierarchical JSON Tree]
-    D --> E[Real-time 3D Viz - Three.js]
-    
-    UserQuery[User Question] --> F[Tree Agent]
-    F --> G{Search Tree}
-    G --> H[Identify Relevant Nodes]
-    H --> I[Fetch Specific Raw Pages]
-    I --> J[Context-Injection Answer]
-    J --> Final[Response with Page Citations]
-```
-
----
-
-## 🛠️ Tech Stack
-
-- **Backend**: Python 3.10+, FastAPI, Uvicorn.
-- **Frontend**: Vite, React, Three.js (3D Graph), GSAP (Animations).
-- **LLM Layer**: LiteLLM (Groq, Gemini, Ollama support).
-- **Parsing**: PyMuPDF (High-speed document reading).
-
----
-
-## 🚀 Setup & Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/siddharthth5135/RAG_PageIndex.git
-cd RAG_PageIndex
-```
+### 1. Requirements
+- Python 3.10+
+- Node.js 18+
 
 ### 2. Environment Configuration
 Create a `.env` file in the root directory:
 ```env
-GROQ_API_KEY=your_groq_key
-GEMINI_API_KEY=your_gemini_key
+# AI Providers
+GROQ_API_KEY=your_key_here
+GEMINI_API_KEY=your_key_here
+
+# Optional: Persistence
+NEO4J_URI=...
+NEO4J_USER=...
+NEO4J_PASSWORD=...
 ```
 
-### 3. Backend Setup
+### 3. Installation & Start
+**Backend:**
 ```bash
-# It is recommended to use a virtual environment
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+# Install dependencies
+pip install fastapi uvicorn litellm pypdf python-dotenv google-generativeai
 
-pip install -r requirements.txt
+# Run server
 python fastapi_server.py
 ```
 
-### 4. Frontend Setup
+**Frontend:**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### 5. Deployment
-To run the production-ready build:
-```bash
-cd frontend
-npm run build
-cd ..
-python fastapi_server.py
-```
-Access the dashboard at `http://localhost:8000`.
+### 4. Access
+- **Dashboard**: [http://localhost:5173](http://localhost:5173)
+- **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
-## 🛡️ License
-Distributed under the MIT License. See `LICENSE` for more information.
+## ⚡ Supported Models (Free-Tier Optimized)
+- **Primary**: `groq/llama-3.3-70b-versatile`
+- **High-Speed**: `groq/llama-3.1-8b-instant`
+- **Fallback**: `gemini/gemini-2.5-flash`, `gemini/gemini-2.0-flash`
 
 ---
-*Built with ❤️ for the future of Context-Aware AI.*
+
+## 👤 Credits
+Created as a professional-grade demonstration of **Vectorless Retrieval Architectures**.
+Developed by **Siddharth** & Antigravity (Advanced AI Coding Assistant).
